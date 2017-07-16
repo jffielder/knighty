@@ -1,47 +1,8 @@
-class Node
-  attr_accessor :one, :two, :four, :five, :seven, :eight, :ten, :eleven
 
-end
-
-
-#lays out squares by what each square contains a symbol
-
-# **update board by assigning square to equal piece (updates are tracked by moves)
-class Board
-  attr_accessor :squares, :moves #squares = [0,0] .. [7,7]
-  attr_reader :destination
-
-  def initialize(origin, dest)
-    @moves = 0
-    @destination = dest
-    x = origin[0]
-    y = origin[1]
-    @squares = {[x,y] => :knight}
-  end
-
-  def move_piece(old_loc, new_loc, piece)
-    @squares = {old_loc => nil, new_loc => piece}
-    @moves = @moves + 1
-  end
-
-end
-
-class Piece
-  attr_accessor :loc
-
-  def initialize(origin)
-    @loc = origin    
-  end
-
-  def move(new_loc)
-    @loc = new_loc
-  end
-
-end
-
+########### independant code **
 
 class Move
-  attr_accessor :parent_Move, :loc
+  attr_accessor :parent_move, :loc
 
   def initialize(loc, parent_move = nil)
     @parent_move = parent_move
@@ -49,19 +10,23 @@ class Move
   end
 end
 
-#takes loc 
-def valid_knight_moves_from(move_node)
-  end_locs = []
+#takes move obj and returns array of move obj
+def available_knight_moves_from(move_node)
+  
+  moves = [move_node.loc]
+  
+  temp_node = move_node
 
-  loc = move_node.loc
-  previous_loc = move_node.parent_move.loc
-  moves = [previous_move.loc]
-
-  until previous_loc.nil? do
+  until temp_node.parent_move.nil? do
+  
+    temp_node = temp_node.parent_move
     
-
-  x = loc[0]
-  y = loc[1]
+    moves.push(temp_node.loc)
+    
+  end
+    
+  x = move_node.loc[0]
+  y = move_node.loc[1]
 
   possible_end_locs =
   [ [x+1, y+2],
@@ -78,7 +43,10 @@ def valid_knight_moves_from(move_node)
       this_loc[1].between?(0,7)) & !this_loc.member?(moves)
     end
 
-    end_moves = end_locs.map do |this_end_loc| Move.new(this_end_loc, loc) end
+    end_moves = end_locs.map do |this_end_loc|
+      puts "valid knight end_move #{this_end_loc}" 
+      Move.new(this_end_loc, move_node) end
+      
 
 
 end
@@ -86,41 +54,83 @@ end
 
 def knight_moves( start, dest )
 
-  dest_reached = false
-
 
   #QUEUE
   unvisited_moves = Queue.new
-  visited_moves = Queue.new
-
+  
+  #begin move chain
+  start_move = Move.new(start)
+  
   #dealing with Move objects (parent_loc and loc), root move has no parent_loc
-  initial_move_list = valid_knight_moves_from(start,moves)
+  initial_move_list = available_knight_moves_from(start_move)
 
-  initial_move_list.find |move| do move.loc == dest end
 
   #initial test
-  if initial_move_list.include?(dest)
-    return initial_move_list.find do |move| move == dest end
+  test_arrays = initial_move_list.map do |m| m.loc end
+  if test_arrays.include?(dest)
+    return test_arrays.find do |array| array==dest end
   end
-
-  #initial queue load
+  
+  #initialize unvisited_moves
 
   initial_move_list.map do |move| unvisited_moves.push(move) end
 
+  matched_node = nil
 
-  #traversal
-  until dest_reached do
-    testing_move = Move.new(unvisited_moves.pop,
-    dest_reached = true if testing_move.eql?(dest)
-    valid_knight_moves_from(unvisited_moves.pop,moves).map do |new_move| unvisited_moves.push(new_move) end
+
+  #traversal, testing each of the children of nodes in unvisited
+  while matched_node.nil? do
+    
+    test_node = unvisited_moves.pop
+    puts "loading with #{test_node.loc}"
+
+    if test_node.loc == dest
+      matched_node = test_node 
+      puts "#{dest} match found: #{matched_node.loc}"
+
+      puts "parent: #{matched_node.parent_move.loc}"
+      puts "parent2: #{matched_node.parent_move.parent_move.loc}"
+
+
+
+
+
+    end
+
+    available_knight_moves_from(test_node).map do |node|
+      unvisited_moves.push(node)
+      #puts "#{node.loc} this is pushed"
+    end
+    
   end
-
-
-  return moves << current_level_children.find do |node| node == dest end if current_level_children.include?(dest)
-
+  
+  move_set = []
+  
+  until matched_node.nil? do
+    puts "matched_node #{matched_node.loc}"
+    move_set << matched_node.loc
+    matched_node = matched_node.parent_move
+  end
+  
+  return move_set
 
 end
 
 
 #test
-puts "#{knight_moves([0,0], [0,2])}"
+origin = [7,7]
+dest = [1,3]
+moves = knight_moves(origin, dest)
+puts "Success"
+puts "From #{origin} to #{dest}"
+
+moves.size.times do |x| puts "#{moves[-1-x]}" end
+
+
+
+
+
+
+
+
+
