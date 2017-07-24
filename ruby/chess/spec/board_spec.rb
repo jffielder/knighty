@@ -99,7 +99,7 @@ describe Board do
 
       context "at [4,3]" do 
 
-        it "returns lots of shit" do
+        it "returns lots of stuff" do
 
           @board.spaces[ [4,3] ] = Piece.new({type: "rook", location: [4,3], color: "white"})
           @board.determine_moves( [4,3] )
@@ -131,15 +131,97 @@ describe Board do
           expect(@board.spaces[ [2,2] ].attackset).to eql( [ [6,6] ] )
         end
 
-        it "moveset = ton of shit" do
-          expect(@board.spaces[ [2,2] ].moveset).to eql( [ [] ] )
+        it "moveset = ton of stuff" do
+          @board.draw
+          expect(@board.spaces[ [2,2] ].moveset).to eql( [[3, 3], [4, 4], [5, 5], [1, 3], [0, 4]] )
         end
-
 
       end
 
    end#desc bishop
 
+   describe "knight" do
+
+    context "at [1,0]" do
+
+      it "returns moveset of [ [2,2], [0,2] ]" do
+
+      @board.determine_moves( [1,0] )
+      expect( @board.spaces[[1,0]].moveset).to eql([ [2,2], [0,2] ])
+      end
+
+    end
+
+    context "at [1,0] for attackset, enemey pieces at [2,2], [0,2]" do
+
+      it "returns attackset of [ [2,2], [0,2] ]" do
+
+        @board.spaces[[2,2]] = Piece.new({type: "pawn", color: "black", location: [2,2] })
+        @board.spaces[[0,2]] = Piece.new({type: "pawn", color: "black", location: [0,2] })
+        @board.determine_moves( [1,0] )
+        expect(@board.spaces[[1,0]].attackset).to eql([ [2,2], [0,2] ])
+      end
+
+    end
+
+  end#desc knight
+
+  describe "queen" do
+
+    context "no moves" do
+
+      it "returns empty set" do
+        @board.determine_moves([3,0])
+        expect(@board.spaces[ [3,0] ].moveset).to eql([])
+      end
+
+    end
+
+
+    context "in the middle of the board [3,3]" do 
+
+      before(:each) do 
+        @board.spaces[ [3,3] ] = Piece.new( {type: "queen", color: "white", location: [3,3]} )
+        @board.determine_moves([3,3])
+        @board.draw
+      end
+      it "returns lots of stuff i copy pasted" do 
+        expect(@board.spaces[ [3,3] ].moveset).to eql([[3, 4], [3, 5], [4, 4], [5, 5], [4, 3], [5, 3], [6, 3], [7, 3], [4, 2], [3, 2], [2, 2], [2, 3], [1, 3], [0, 3], [2, 4], [1, 5]])
+      end
+
+      it "attacks also returns lots of stuff" do 
+        expect(@board.spaces[ [3,3] ].attackset).to eql([[3, 6], [6, 6], [0, 6]]
+)
+      end
+
+    end
+
+  end#desc queen
+
+  describe "king" do 
+
+    context "no moves at [4,0]" do
+
+      it "returns empty set" do
+
+        @board.determine_moves([4,0])
+        expect( @board.spaces[[4,0] ].moveset).to eql([])
+      end
+
+    end
+
+    context "king in the middle of the board at [3,3]" do
+
+      it "returns perimeter around [3,3]" do 
+        @board.spaces[ [3,3] ] = Piece.new( {type: "king", color: "white", location: [3,3]} )
+        @board.determine_moves([3,3])
+        @board.draw
+        expect(@board.spaces[ [3,3] ].moveset).to eql([[3, 4], [4, 4], [4, 3], [4, 2], [3, 2], [2, 2], [2, 3], [2, 4]] )
+
+      end
+    end
+
+  end#desc king
 
 
 
@@ -188,9 +270,5 @@ describe Board do
 
 
   end#.movepiece
-
-
-
-
 
 end#Board

@@ -112,7 +112,7 @@ class Board
 
         end
 
-        atk_moves = [[x+1, y+1], [x-1, y+1]]
+        atk_moves = [[x+1, y-1], [x-1, y-1]]
         atk_moves.each do |move|
           attackset << move if @spaces[move].nil?.! and @spaces[move].color == "white"
           if @spaces[move].nil?.!
@@ -134,6 +134,27 @@ class Board
 
     when "knight"
 
+      possible_directions =
+      [ [x+1, y+2],
+        [x+1, y-2],
+        [x-1, y+2],
+        [x-1, y-2],
+        [x+2, y+1],
+        [x+2, y-1],
+        [x-2, y+1],
+        [x-2, y-1] ]
+
+      moveset = possible_directions.select do |d|
+        (d[0].between?(0,7) & d[1].between?(0,7)) and @spaces[d].nil?
+      end
+
+      attackset = possible_directions.select do |d|
+        (d[0].between?(0,7) & d[1].between?(0,7)) and (@spaces[d].nil?.! and @spaces[d].color != @spaces[loc].color)
+      end
+
+      @spaces[loc].moveset = moveset
+      @spaces[loc].attackset = attackset
+
 
     when "bishop"
 
@@ -145,8 +166,26 @@ class Board
 
     when "queen"
 
+      runner(loc, :north)
+      runner(loc, :northeast)
+      runner(loc, :east)
+      runner(loc, :southeast)
+      runner(loc, :south)
+      runner(loc, :southwest)
+      runner(loc, :west)
+      runner(loc, :northwest)
+
 
     when "king"
+
+      runner(loc, :north, 1)
+      runner(loc, :northeast, 1)
+      runner(loc, :east, 1)
+      runner(loc, :southeast, 1)
+      runner(loc, :south, 1)
+      runner(loc, :southwest, 1)
+      runner(loc, :west, 1)
+      runner(loc, :northwest, 1)
 
     end
 
@@ -241,9 +280,8 @@ class Board
       end
     end
     puts ""
-    puts " |______________________"
-    puts ""
-    print "   0  1  2 3 4  5  6  7 8\n"
+    puts " |_____________________"
+    print "   0  1 2  3 4  5 6  7 \n"
   end#draw
 
 

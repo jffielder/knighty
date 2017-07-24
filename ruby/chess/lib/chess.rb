@@ -22,7 +22,7 @@ def s_to_array(input)
     b << i.to_i
   end
 
-  return nil if b.size != 2
+  return false if b.size != 2
 
   return b
 
@@ -46,24 +46,28 @@ def start_game
     puts ""
     puts "#{board.player} turn"
     puts "select piece [x,y]"
-
     print ": "
+
     start_pos = gets.chomp
 
     start_pos = s_to_array(start_pos)
 
     board.draw
 
+    redo if board.spaces[start_pos].nil?
+
     puts ""
     puts "#{board.spaces[start_pos].type} #{start_pos} move to?"
     puts ""
-    print "[x,y]: "
+    print ": "
 
     end_pos = gets.chomp
 
     end_pos = s_to_array(end_pos)
 
-    board.move_piece( start_pos , end_pos )
+
+
+    redo if board.move_piece( start_pos , end_pos ) == false
 
     board.draw
 
@@ -80,7 +84,7 @@ def game_over?
   return false
 end
 
-#start_game
+start_game
 
 =begin
 

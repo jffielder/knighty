@@ -3,34 +3,7 @@
 class Piece
   attr_accessor :color, :type, :graphic, :moveset, :attackset, :location
 
-
-  def set_moveset
-    #pawn  
-    #unique
-
-    #rook
-    #unique rules
-
-    #horse
-    [ [1, 2 ],
-      [1, -2],
-      [-1, 2],
-      [-1, -2],
-      [2, 1 ],
-      [2, -1],
-      [-2, 1],
-      [-2, -1] ]
-
-      #bishop
-
-      #queen
-
-      #king
-      #unique rules
-
-  end#set_moveset
-
-  def set_graphic
+  def graphic
 
     if @color == "white"
       white_types = {
@@ -42,7 +15,7 @@ class Piece
         "king"   => "♔",
       } 
 
-      @graphic = white_types[@type]
+      return white_types[@type]
 
     elsif @color == "black"
       black_types = {
@@ -54,7 +27,7 @@ class Piece
         "king"   => "♚",
       }
 
-      @graphic = black_types[@type]
+      return black_types[@type]
     end
   end
 
@@ -70,7 +43,7 @@ class Piece
 
     @attackset = []
 
-    set_graphic
+    @graphic = graphic
 
   end
 
