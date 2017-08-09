@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Hangman</title>
+	<style type="text/css">
+
+		.container {
+			height: 90%;
+			width: 50%;
+			margin-left: 25%;
+			margin-right: 25%;
+			padding-top:50px;
+			overflow: hidden;
+			position: fixed;
+
+		}
+
+		h1 {
+			text-align: center;
+		}
+
+		div.info {
+			text-align: center;
+		}
+
+
+		div.box {
+			height:30%;
+			width: 30%;
+			margin-left:35%;
+			border-width: 5px;
+			border-color:#000000;
+			display: none;
+		}
+
+		div.submission_box {
+			width: auto;
+			text-align: center;
+			height: 10%;
+			margin: 5% auto;
+			padding: 1%;
+			<% if game.strikes == game.lives || game.won? || game.lost?%>
+				display: none;
+				<%end%>
+		}
+
+		ul {
+			text-align: center;
+		}
+
+		.blanks {
+			display: inline;
+		}
+
+		.newgame-div {
+			text-align: center;
+			<% if game.strikes == game.lives || game.won? || game.lost?%>
+				display: initial;
+			<% else%>
+				display:none;
+
+			<% end %>
+			
+		}
+
+		.word {
+			display:inline;
+		}
+
+
+	</style>
+</head>
+<body>
+
+<div class="container" style="color: #266887;" >
+	<h1 style="color: #266887">Hangman</h1>
+	<div class="box"></div>
+
+	<div class="info">
+	<p class="lives">Lives: <%=game.lives - game.strikes %></p>
+
+	<ul>
+		<% if !game.blanks.empty? %>
+			<% for blank in game.blanks %>
+				<li class="blanks"><%= "#{blank}" %> </li>
+			<% end %>			
+		<% end %>
+
+		<p></p>
+		<% if !game.attempts.empty? %>
+			<% for attempt in game.attempts %>
+				<% if !game.word.include? (attempt) %>
+					<li class="blanks" style="color: #D03131"><%= "#{attempt}" %> </li>
+				<% end %>
+			<% end %>			
+		<% end %>
+	</ul>
+
+	</div>
+	<form>
+	<div class="submission_box">
+		<input type="text" name="guess">
+		<input type="submit" value="Submit">
+
+	</div>
+	</form>
+
+	<div class="newgame-div">
+		
+		<p style="text-align: center"><%= message %></p>
+		
+		<form>
+			<input class="newgame" type="submit" name="newgame" value="New Game">
+		</form>
+
+		<% if game.strikes == game.lives || game.won? || game.lost?%> 
+		<p style="display: inline;">Word: </p>
+		<% for letter in game.word %>
+			<li class="word"><%="#{letter}"%></li>
+		<% end %>
+
+		<% end %>
+
+	</div>
+
+</div>
+</body>
+</html>
